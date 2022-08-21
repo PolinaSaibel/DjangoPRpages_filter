@@ -1,0 +1,64 @@
+Создать двух пользователей (с помощью метода User.objects.create_user('username')).
+Создать два объекта модели Author, связанные с пользователями.
+Добавить 4 категории в модель Category.
+Добавить 2 статьи и 1 новость.
+Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий).
+Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
+Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+Обновить рейтинги пользователей.
+Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
+Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
+Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+_____
+py manage.py shell
+from news.models import *
+u1 = User.objects.create_user('ivan')
+u2 = User.objects.create_user('vlad')
+Autor.objects.create(autorUser=u1)
+Category.objects.create(name='s')
+Category.objects.create(name='p')
+Category.objects.create(name='e')
+Category.objects.create(name='a')
+Autor.objects.create(autorUser=u2)
+autor =Autor.objects.get(id=1)
+Post.objects.create(PostAutor=autor, Choise='NW', header='news', text='sometext')
+Post.objects.get(id=1)._postcategory.add(Category.objects.get(id=1))
+Post.objects.get(id=1)._postcategory.add(Category.objects.get(id=3))
+Post.objects.create(PostAutor=autor, Choise='AR', header='abc', text='sometext2')
+Post.objects.get(id=2)._postcategory.add(Category.objects.get(id=1))
+Post.objects.get(id=2)._postcategory.add(Category.objects.get(id=4))
+Post.objects.create(PostAutor=autor, Choise='AR', header='abc2', text='somebigtext2blablabla')
+Post.objects.get(id=3)._postcategory.add(Category.objects.get(id=4))
+Post.objects.get(id=3)._postcategory.add(Category.objects.get(id=3))
+
+Comment.objects.create(commentPost=Post.objects.get(id=1), commentator=Autor.objects.get(id=2).autorUser, com_text='blablabla')
+Comment.objects.create(commentPost=Post.objects.get(id=1), commentator=Autor.objects.get(id=1).autorUser, com_text='textcomment')
+Comment.objects.create(commentPost=Post.objects.get(id=2), commentator=Autor.objects.get(id=1).autorUser, com_text='aaaaaaa')
+Comment.objects.create(commentPost=Post.objects.get(id=3), commentator=Autor.objects.get(id=2).autorUser, com_text='aaaaaaa')
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=2).dislike()
+Autor.objects.get(id=1).update_rating()
+Post.objects.get(id=1).like()
+Post.objects.get(id=2).like() x2
+Post.objects.get(id=3).dislike()
+Comment.objects.get(id=3).like()
+Comment.objects.get(id=4).dislike() x2
+Autor.objects.get(id=1).update_rating()
+autor =Autor.objects.get(id=2)
+Post.objects.create(PostAutor=autor, Choise='NW', header='Author2news', text='sometextAuthot2')
+Post.objects.get(id=4)._postcategory.add(Category.objects.get(id=1))
+Post.objects.get(id=4).like()
+Autor.objects.get(id=2).update_rating()
+
+a = Autor.objects.order_by('-ratingAutor')[:1]
+
+a.ratingAutor
+for i in a:
+    i.ratingAutor
+    i.autorUser.username
+
+best_post = Post.objects.all().order_by('-rating').values('timeCreation', 'PostAutor', 'rating', 'header', 'text')[0]
+best_post
+the_post = Post.objects.get(rating=best_post['rating'])
+the_post
+best_post_comments = the_post.comment_set.all()
