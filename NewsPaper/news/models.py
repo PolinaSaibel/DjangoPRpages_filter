@@ -22,10 +22,10 @@ class Autor(models.Model):
     def __str__(self):
         return str(self.autorUser)
 
-sport = 's'
-politics = 'p'
-education = 'e'
-art = 'a'
+sport = 'sport'
+politics = 'politics'
+education = 'education'
+art = 'art'
 
 TOPICS = [
     (sport, 'Спорт'),
@@ -35,7 +35,7 @@ TOPICS = [
 ]
 
 class Category(models.Model):
-    name = models.CharField(max_length=225, choices=TOPICS, unique=True)
+    name = models.CharField(max_length=225, choices=TOPICS, unique=True, verbose_name='Категории')
     def __str__(self):
         return self.name
 
@@ -49,7 +49,7 @@ class Post(models.Model):
     PostAutor = models.ForeignKey(Autor, on_delete=models.CASCADE)
     Choise = models.CharField(max_length=2, choices=ARTICLEORNEWS, default=article)
     timeCreation = models.DateTimeField(auto_now_add=True)
-    header = models.CharField(max_length=255)
+    header = models.CharField(max_length=255, verbose_name='Заголовок')
     _postcategory = models.ManyToManyField(Category, through='PostCategory')
     text = models.TextField()
     rating = models.SmallIntegerField(default=0)
