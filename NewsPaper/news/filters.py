@@ -1,24 +1,24 @@
 # python manage.py runserver
 
-import django_filters
+from django_filters import FilterSet, ModelChoiceFilter, DateFilter, ChoiceFilter
 # from django_filters import FilterSet, DateFilter, CharFilter
 from .models import *
 from django.forms.widgets import DateInput
 
-class PostFilter(django_filters.FilterSet):
-    data = django_filters.DateFilter(
+class PostFilter(FilterSet):
+    data = DateFilter(
         field_name='timeCreation',
         lookup_expr='gte',
         widget=DateInput(
             attrs={'type': 'date'},))
 
-    _postcategory = django_filters.ModelChoiceFilter(lookup_expr='exact', queryset=Category.objects.all(), label='Категории')
-
+    _postcategory = ModelChoiceFilter(lookup_expr='exact', queryset=Category.objects.all(), label='Категории')
+    Choise = ChoiceFilter(choices=ARTICLEORNEWS)
 
     class Meta:
         model = Post
-        fields = {'header':['icontains']
-                 ,}
+        fields = {'header':['icontains'],
+                 }
 
 
 

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
-
+from django.urls import reverse
 
 class Autor(models.Model):
     autorUser = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -26,7 +26,6 @@ sport = 'sport'
 politics = 'politics'
 education = 'education'
 art = 'art'
-
 TOPICS = [
     (sport, 'Спорт'),
     (politics, 'политика'),
@@ -38,12 +37,12 @@ class Category(models.Model):
     name = models.CharField(max_length=225, choices=TOPICS, unique=True, verbose_name='Категории')
     def __str__(self):
         return self.name
-
+#
 article = 'AR'
 news = 'NW'
 ARTICLEORNEWS = [
     (article, 'статья'),
-    (news, 'сатья')
+    (news, 'новость')
 ]
 class Post(models.Model):
     PostAutor = models.ForeignKey(Autor, on_delete=models.CASCADE)
@@ -67,6 +66,10 @@ class Post(models.Model):
 
     def __str__(self):
         return str(self.header)
+
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
+
 
 class PostCategory(models.Model):
     _Post = models.ForeignKey(Post, on_delete=models.CASCADE)
