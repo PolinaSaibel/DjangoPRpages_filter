@@ -7,13 +7,15 @@ from django.forms.widgets import DateInput
 
 class PostFilter(FilterSet):
     data = DateFilter(
+
         field_name='timeCreation',
         lookup_expr='gte',
         widget=DateInput(
-            attrs={'type': 'date'},))
+            attrs={'type': 'date'}), label='сортировка по дате')
 
-    _postcategory = ModelChoiceFilter(lookup_expr='exact', queryset=Category.objects.all(), label='Категории')
-    Choise = ChoiceFilter(choices=ARTICLEORNEWS)
+    _postcategory = ModelChoiceFilter(lookup_expr='exact', queryset=Category.objects.all(),  label='Категории')
+    Choise = ChoiceFilter(choices=ARTICLEORNEWS, label='Новость или статья')
+
 
     class Meta:
         model = Post
@@ -22,6 +24,5 @@ class PostFilter(FilterSet):
 
 
 
- # '_postcategory':['gte']
 
 

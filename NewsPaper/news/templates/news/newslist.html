@@ -8,6 +8,9 @@ News
 
 <!-- В контенте на странице мы выводим все товары -->
 {% block content %}
+{% if is_not_author %}
+<button> <a href="sign/upgrade/"> Хочу Premium!</a> </button>
+{% endif %}
 
 <h1>Все новости</h1>
 <h3>Всего новостей: {{ news|length }}</h3>

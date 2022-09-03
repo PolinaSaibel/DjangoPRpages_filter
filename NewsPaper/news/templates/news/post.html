@@ -1,12 +1,10 @@
-<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+
 {% extends 'default.html' %}
 {% load custom_filters %}
-<!-- Название у нас будет products -->
 {% block title %}
 News
 {% endblock title %}
 
-<!-- В контенте на странице мы выводим все товары -->
 {% block content %}
 <h1>{{ post }}</h1>
 {{ post.header }}

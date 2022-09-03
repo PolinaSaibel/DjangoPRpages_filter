@@ -22,10 +22,10 @@ class Autor(models.Model):
     def __str__(self):
         return str(self.autorUser)
 
-sport = 'sport'
-politics = 'politics'
-education = 'education'
-art = 'art'
+sport = 's'
+politics = 'p'
+education = 'e'
+art = 'a'
 TOPICS = [
     (sport, 'Спорт'),
     (politics, 'политика'),
@@ -36,8 +36,8 @@ TOPICS = [
 class Category(models.Model):
     name = models.CharField(max_length=225, choices=TOPICS, unique=True, verbose_name='Категории')
     def __str__(self):
-        return self.name
-#
+        return str(self.name)
+
 article = 'AR'
 news = 'NW'
 ARTICLEORNEWS = [
@@ -66,6 +66,7 @@ class Post(models.Model):
 
     def __str__(self):
         return str(self.header)
+
 
     def get_absolute_url(self):
         return reverse('post_detail', args=[str(self.id)])
