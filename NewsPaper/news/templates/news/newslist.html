@@ -11,7 +11,8 @@ News
 {% if is_not_author %}
 <button> <a href="sign/upgrade/"> Хочу Premium!</a> </button>
 {% endif %}
-
+{% if request.user.is_authenticated %}
+<h2> {{ request.user.user_name }}</h2> {% endif %}
 <h1>Все новости</h1>
 <h3>Всего новостей: {{ news|length }}</h3>
 
@@ -40,6 +41,7 @@ News
                <td>{{ post.header }}</td>
                <td>{{ post.timeCreation|date:'d M Y'  }}</td>
                <td>{{ post.text|truncatechars:20 }}</td>
+               <td>{{ post.rating }}
            </tr>
            {% endfor %}
 

@@ -7,7 +7,17 @@ News
 
 {% block content %}
 <h1>{{ post }}</h1>
-{{ post.header }}
 <p align="right">{{ post.timeCreation|date:'d M Y'  }}</p>
+
 <p>{{ post.text|censor }}</p>
+
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% if user is not subscriber %}
+    <input type="submit" value="subscribe"/>
+    {%endif%}
+    {% if user is subscriber %}
+    <input type="submit" value="delete_subscribe"/>
+{%endif%}
+</form>
 {% endblock content %}

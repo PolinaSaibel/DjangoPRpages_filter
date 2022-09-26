@@ -35,6 +35,7 @@ TOPICS = [
 
 class Category(models.Model):
     name = models.CharField(max_length=225, choices=TOPICS, unique=True, verbose_name='Категории')
+    subscriberss = models.ManyToManyField(User, through='Subscribers', blank=True)
     def __str__(self):
         return str(self.name)
 
@@ -71,6 +72,10 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('post_detail', args=[str(self.id)])
 
+#таблица подписки на категорию
+class Subscribers(models.Model):
+    subscriber = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    C = models.ForeignKey(Category, default=None, on_delete=models.CASCADE, blank=True, null=True)
 
 class PostCategory(models.Model):
     _Post = models.ForeignKey(Post, on_delete=models.CASCADE)
