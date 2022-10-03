@@ -23,25 +23,30 @@ News
 <!--       {# Добавим кнопку отправки данных формы #}-->
 <input type="submit" value="Найти" />
 </form>
+<table align="center">
+           <tr><td><a href="/category/1" class="btn">категория спорт</a></td>
+               <td><a href="/category/2" class="btn">категория политика</a></td>
+               <td><a href="/category/3" class="btn">категория образование</a></td>
+               <td><a href="/category/4" class="btn">категория искусство</a></td>
+           </tr>
 <hr>
    {% if news %}
        <table align="center">
            <tr>
-<!--               Вывести все статьи в виде заголовка, даты публикации и первых 20 символов текста.-->
-<!--Новости должны выводиться в порядке от более свежей к самой старой-->
-               <td><h4>№</h4></td>
                <td><h4>Заголовок</h4></td>
                <td><h4>Дата публикации</h4></td>
                <td><h4>Текст</h4></td>
+               <td><h4>Рейтинг</h4></td>
+               <td><h4>Статья либо новость</h4></td>
            </tr>
            {% for post in news %}
            <tr>
-
-               <td>{{ post.id }}</td>
-               <td>{{ post.header }}</td>
+               <td><a href="/{{ post.id }}">{{ post.header }}</a></td>
                <td>{{ post.timeCreation|date:'d M Y'  }}</td>
                <td>{{ post.text|truncatechars:20 }}</td>
-               <td>{{ post.rating }}
+               <td>{{ post.rating }}</td>
+               <td>{{ post.Choise }}</td>
+               <td>{{ post.PostAutor }}</td>
            </tr>
            {% endfor %}
 

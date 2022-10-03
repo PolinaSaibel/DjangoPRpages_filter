@@ -8,8 +8,10 @@ class PostForms(forms.ModelForm):
         fields = [
             'PostAutor',
             'header',
+            'Choise',
             '_postcategory',
             'text',
+
             ]
     def clean(self):
         cleaned_data = super().clean()

@@ -8,16 +8,9 @@ News
 {% block content %}
 <h1>{{ post }}</h1>
 <p align="right">{{ post.timeCreation|date:'d M Y'  }}</p>
-
+{%for cat in Post.postcategory %}
+    <p>{{ postcategory.name }}</p>
+{%endfor%}
 <p>{{ post.text|censor }}</p>
-
-<form action="" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {% if user is not subscriber %}
-    <input type="submit" value="subscribe"/>
-    {%endif%}
-    {% if user is subscriber %}
-    <input type="submit" value="delete_subscribe"/>
-{%endif%}
-</form>
+<p align="right">{{ post.PostAutor }}</p>
 {% endblock content %}
