@@ -8,9 +8,8 @@ News
 {% block content %}
 <h1>{{ post }}</h1>
 <p align="right">{{ post.timeCreation|date:'d M Y'  }}</p>
-{%for cat in Post.postcategory %}
-    <p>{{ postcategory.name }}</p>
-{%endfor%}
+<p>In category: <strong>{{ category_objects.all.name}}</strong></p>
+
 <p>{{ post.text|censor }}</p>
-<p align="right">{{ post.PostAutor }}</p>
+<p align="right"><a href="/author/{{ post.PostAutor.id }}" class='btn'>{{ post.PostAutor }}</a></p>
 {% endblock content %}

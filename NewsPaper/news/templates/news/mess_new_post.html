@@ -8,10 +8,11 @@
 <body>
 
     <h2> New post in category {{ category }}!</h2>
-    <p> Новый пост в категории !Здравствуй, {{ User.username }}. Новая статья в твоём любимом разделе {{ category }}!</p>
+    <p> Новый пост в категории {{ category }}!Здравствуй, {{ username }}. Новая статья в твоём любимом разделе {{ category }}!</p>
        <p>{{ header }} </p>
         <p>{{ text }} </p>
-        <p><>{{ text }} </p>
+<p> <a href="http://127.0.0.1:8000/news/{{pk_id}}" class="btn btn-outline-success">Read the post</a> </p>
+
 
 
 </body>

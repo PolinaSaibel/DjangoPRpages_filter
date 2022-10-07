@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Недельная рассылка</title>
+</head>
+<body>
+
+    <h2> Посты за прошедшую неделю в категории {{ category }}!</h2>
+    {%for post in posts%}
+    <p>{{post.header}}</p>
+    <p align="right"> {{post.PostAutor}}</p>
+    <p>{{post.text|truncatechars:10}}</p>
+    <p><a href="http://127.0.0.1:8000/{{post.id}}"> Read this post</a></p>
+    {% endfor %}
+
+<p> Все новости категории {{category}} -><a href="http://127.0.0.1:8000/category/{{category.id}}" class="btn btn-outline-success">Read the posts</a> </p>
+
+
+
+</body>
+</html>

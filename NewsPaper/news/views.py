@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.shortcuts import render, reverse
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -7,12 +8,14 @@ from .filters import PostFilter
 from .forms import PostForms, ProfileForms
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
-from pathlib import Path
+from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
-from django.contrib.auth.models import Group
+
 from django.contrib.auth.decorators import login_required
 from dotenv import load_dotenv
 from NewsPaper.settings import DEFAULT_FROM_EMAIL
+import time
+
 
 
 def index(request):
@@ -20,7 +23,7 @@ def index(request):
 
 class NewsList(ListView):
     model = Post
-    ordering = 'header'
+    ordering = '-timeCreation'
     template_name = 'newslist.html'
     context_object_name = 'news'
     paginate_by = 10
@@ -54,7 +57,6 @@ class PostCategory(ListView):
         return context
 
 
-
     def get_queryset(self, **kwargs):
         self.id = self.kwargs.get('pk')
         print('a', self.id)
@@ -62,6 +64,29 @@ class PostCategory(ListView):
         print(queryset)
         return queryset
 
+
+
+
+class PostAuthor(ListView):
+    model = Post
+    template_name = 'news/author.html'
+    context_object_name = 'posts'
+    paginate_by = 10
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['author'] = Autor.objects.get(id=self.id) #Post.objects.filter(_postcategory=Category.objects.get(id=self.kwargs.get('pk')))
+
+        return context
+
+
+    def get_queryset(self, **kwargs):
+        self.id = self.kwargs.get('pk')
+        print('a', self.id)
+        queryset = Post.objects.filter(PostAutor=Autor.objects.get(id=self.id)) # если в Post есть поле post_category
+        print(queryset)
+        return queryset
 
 
 
@@ -111,51 +136,6 @@ def unsub_to_category(request, pk):
 
 
 
-    # #подписка на группу
-    # @login_required
-    # def add_subscribe(request, **kwargs):
-    #     category_number = int(kwargs['pk'])
-    #     Category.objects.get(pk=category_number).subscriberss.add(request.user)
-    #     return redirect('/news/')
-    #
-    # # отписка на группу
-    # @login_required
-    # def delete_subscribe(request, **kwargs):
-    #     category_number = int(kwargs['pk'])
-    #     Category.objects.get(pk=category_number).subscriberss.remove(request.user)
-    #     return redirect('/news/')
-
-    # def post(self, request, *args, **kwargs):
-    #
-    #     userid = request.user
-    #     postid = self.kwargs.get('pk')
-    #     postcategories = Post.objects.get(pk=postid)._postcategory.all()
-    #
-    #     for item in postcategories:
-    #         cat = Category.objects.get(name__iexact=f'{item}')
-    #         subscriber = Subscribers(subscriber=userid, C=cat)
-    #         subscriber.save()
-    #
-    #     html_content = render_to_string('mail_for_subscriber.html',
-    #             {
-    #                 'subcriber': subscriber,
-    #                 'cat': cat,
-    #             }
-    #         )
-    #     msg = EmailMultiAlternatives(
-    #         subject=f'{request.user.username} subscribe ',
-    #         body=f"u subscribe to {cat}",  # это то же, что и message
-    #         from_email='masyorova@yandex.ru',
-    #         to=[request.user.email], #request.user.email # это то же, что и recipients_list
-    #     )
-    #     msg.attach_alternative(html_content, "text/html")  # добавляем html
-    #
-    #     msg.send()  # отсылаем
-
-
-
-
-
 class PostCreate(CreateView, PermissionRequiredMixin):
 
     model = Post
@@ -165,34 +145,25 @@ class PostCreate(CreateView, PermissionRequiredMixin):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
+        self.object.PostAutor = Autor.objects.get(autorUser=self.request.user)
+        self.object.save()
         return super().form_valid(form)
 
+
     def post(self, request):
-        cat_id =request.POST["_postcategory"] #id category
-        # print(cat_id)
-        cat = Category.objects.get(id=cat_id).subscriberss.all() #список всех подписчиков
-        # print('quertiset',cat)
-        for c in cat:
+        user = User.objects.get(id=request.user.id)
+        author = Autor.objects.get(autorUser=user)
+        d_from = datetime.now().date()
+        print("dfrom", d_from)
+        d_to = d_from + timedelta(days=1)
+        print('dto', d_to)
+        posts = Post.objects.filter(PostAutor=author, timeCreation__range=(d_from, d_to))
+        print(posts)
+        if len(posts) > 1000000:
+            print("howmany",len(posts))
+            return redirect('/limit/')
+        # else:
 
-            mail=c.email
-            # print("mail", mail)
-
-
-            html_content = render_to_string('mess_new_post.html',
-                {'header': request.POST["header"],
-                'category': Category.objects.get(id=request.POST["_postcategory"]).name,
-                'text': request.POST["text"],
-                # 'author': request.POST["PostAutor"],
-                # 'name': request.user.username
-            })
-
-            msg = EmailMultiAlternatives(
-                        subject=f'Статья в вашей любимой категории {Category.objects.get(id=request.POST["_postcategory"])}.',
-                        from_email=DEFAULT_FROM_EMAIL,
-                        to=[mail],
-                    )
-            msg.attach_alternative(html_content, "text/html")  # добавляем html
-            msg.send()  # отсылаем
         return super(PostCreate, self).post(self, request)
 
 
@@ -218,7 +189,7 @@ class ProfileUpdate(LoginRequiredMixin, UpdateView):
     form_class = ProfileForms
     model = User
     template_name = 'profil.html'
-    # success_url = reverse_lazy('protect/index.html')
+
 
 class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'protect/index.html'

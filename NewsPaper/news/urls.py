@@ -15,5 +15,7 @@ urlpatterns = [
     path('profile/<int:pk>/', ProfileUpdate.as_view(), name='profile_update'),
     path('sub/<int:pk>/', sub_to_category, name='sub_to_category'),
     path('unsub/<int:pk>', unsub_to_category, name='unsub_to_cat'),
+    path('limit/', PostCreate.as_view(), name='limit'),
+    path('author/<int:pk>', PostAuthor.as_view(), name='autor'),
 ]
 
