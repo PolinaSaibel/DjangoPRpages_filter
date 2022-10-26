@@ -19,10 +19,6 @@ def notify_subscribers(sender, instance, action,  **kwargs):
             print(S)
 
             for subscribe in S:
-
-
-
-
                 msg = EmailMultiAlternatives(
                             subject=f'Статья в вашей любимой категории {cat}.',
                             from_email='masyorova@yandex.ru',
