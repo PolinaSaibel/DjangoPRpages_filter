@@ -7,6 +7,7 @@ urlpatterns = [
     path('index', index),
 
     path('', NewsList.as_view(), name='newslist'),
+    path('', WeekView.as_view()),
     path('category/<int:pk>', PostCategory.as_view(), name='post_category'),
     path('<int:pk>', PostDetail.as_view(), name='post_detail'),
     path('create/', PostCreate.as_view(), name='post_create'),

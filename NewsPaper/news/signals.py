@@ -4,7 +4,7 @@ from django.db.models.signals import post_save, m2m_changed, pre_save
 from django.dispatch import receiver  # импортируем нужный декоратор
 from django.core.mail import EmailMultiAlternatives
 from .models import *
-from .tasks import new_post_sub
+from .tasks import notify_sub_weekly
 from django.template.loader import render_to_string
 
 @receiver(m2m_changed, sender=PostCategory)

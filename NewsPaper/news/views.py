@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.shortcuts import render, reverse
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView, View
 from .models import *
 from .filters import PostFilter
 from .forms import PostForms, ProfileForms
@@ -10,6 +10,7 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
+from .tasks import notify_sub_weekly
 
 from django.contrib.auth.decorators import login_required
 from dotenv import load_dotenv
@@ -20,6 +21,13 @@ import time
 
 def index(request):
     return render(request, 'index2.html')
+
+class WeekView(View):
+    def get(self, request):
+        notify_sub_weekly.delay()
+        print('celery work')
+        return redirect("/")
+
 
 class NewsList(ListView):
     model = Post
@@ -38,11 +46,13 @@ class NewsList(ListView):
         # чтобы потом добавить в контекст и использовать в шаблоне.
         self.filterset = PostFilter(self.request.GET, queryset)
         # Возвращаем из функции отфильтрованный список товаров
+        
         return self.filterset.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filterset'] = self.filterset
+     
         return context
 
 class PostCategory(ListView):
@@ -162,8 +172,10 @@ class PostCreate(CreateView, PermissionRequiredMixin):
         if len(posts) > 1000000:
             print("howmany",len(posts))
             return redirect('/limit/')
-        # else:
+           
 
+        # else:
+    
         return super(PostCreate, self).post(self, request)
 
 
