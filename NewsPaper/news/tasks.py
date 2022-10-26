@@ -1,6 +1,24 @@
 from django.core.mail.message import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from .models import Post
+from NewsPaper.celery import app
+import time
+
+#celery -A NewsPaper worker -l INFO
+#python -m celery -A NewsPaper worker -l INFO
+#celery -A NewsPaper worker --loglevel=debug --concurrency=4
+
+
+@app.task
+def hello():
+    time.sleep(10)
+    print("Hello, world!")
+
+@app.task
+def printer(N):
+    for i in range(N):
+        time.sleep(1)
+        print(i+1)
 
 
 def get_subscribers(category):
