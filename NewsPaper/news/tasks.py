@@ -51,6 +51,35 @@ def notify_sub_weekly():
             msg.send()  # отсылаем 
 
 
+def notyfy_new_post(instance):
+    print(' signals...', )
+
+    # if action == 'post_add':
+    print('notifying subscribers from signals...', instance.id)
+    for cat in instance._postcategory.all():
+        print('cat', instance._postcategory.all())
+        S=Subscribers.objects.filter(C=cat)
+        print(S)
+
+        for subscribe in S:
+            msg = EmailMultiAlternatives(
+                        subject=f'Статья в вашей любимой категории {cat}.',
+                        from_email='masyorova@yandex.ru',
+                        to=[subscribe.subscriber.email],
+                    )
+            html_content = render_to_string('mess_new_post.html',
+                    {'header': instance.header,
+                        'category': subscribe.C.name,
+                        'text': instance.text,
+                        'username': subscribe.subscriber,
+                        'pk_id': instance.pk,
+
+                })
+            msg.attach_alternative(html_content, "text/html")  # добавляем html
+            msg.send()  # отсылаем
+    # else:
+    #     print("kl;;;")
+
 
 
 def get_subscribers(category):
