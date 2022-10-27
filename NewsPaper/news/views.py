@@ -24,6 +24,7 @@ def index(request):
 
 class WeekView(View):
     def get(self, request):
+        print('weekview work')
         notify_sub_weekly.delay()
         print('celery work')
         return redirect("/")
@@ -35,6 +36,12 @@ class NewsList(ListView):
     template_name = 'newslist.html'
     context_object_name = 'news'
     paginate_by = 10
+
+    # def get(self, request):
+    #     print('weekview work')
+    # #     #notify_sub_weekly.delay()
+    # #     print('celery work')
+    #     return redirect("/")
 
     def get_queryset(self):
         # Получаем обычный запрос
