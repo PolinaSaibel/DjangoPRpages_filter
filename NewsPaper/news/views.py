@@ -3,21 +3,24 @@ from django.shortcuts import render, reverse
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView, View
+from django.views.generic.edit import FormMixin
 from .models import *
 from .filters import PostFilter
-from .forms import PostForms, ProfileForms
+from .forms import PostForms, ProfileForms, CommentForm
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
-from .tasks import notify_sub_weekly
+from .tasks import notify_sub_weekly, notyfy_new_post
 
 from django.contrib.auth.decorators import login_required
 from dotenv import load_dotenv
 from NewsPaper.settings import DEFAULT_FROM_EMAIL
 import time
 
-
+# from django.shortcuts import get_object_or_404
+from django.http import Http404
+from django.core.exceptions import ObjectDoesNotExist
 
 def index(request):
     return render(request, 'index2.html')
@@ -37,30 +40,17 @@ class NewsList(ListView):
     context_object_name = 'news'
     paginate_by = 10
 
-    # def get(self, request):
-    #     print('weekview work')
-    # #     #notify_sub_weekly.delay()
-    # #     print('celery work')
-    #     return redirect("/")
-
     def get_queryset(self):
-        # Получаем обычный запрос
         queryset = super().get_queryset()
-        # Используем наш класс фильтрации.
-        # self.request.GET содержит объект QueryDict, который мы рассматривали
-        # в этом юните ранее.
-        # Сохраняем нашу фильтрацию в объекте класса,
-        # чтобы потом добавить в контекст и использовать в шаблоне.
         self.filterset = PostFilter(self.request.GET, queryset)
-        # Возвращаем из функции отфильтрованный список товаров
-        
+                
         return self.filterset.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filterset'] = self.filterset
-     
         return context
+
 
 class PostCategory(ListView):
     model = Post
@@ -73,12 +63,11 @@ class PostCategory(ListView):
         context['category'] = Category.objects.get(id=self.id) #Post.objects.filter(_postcategory=Category.objects.get(id=self.kwargs.get('pk')))
         return context
 
-
     def get_queryset(self, **kwargs):
         self.id = self.kwargs.get('pk')
-        print('a', self.id)
+        #print('a', self.id)
         queryset = Post.objects.filter(_postcategory=Category.objects.get(id=self.id)) # если в Post есть поле post_category
-        print(queryset)
+        #print(queryset)
         return queryset
 
 
@@ -100,21 +89,44 @@ class PostAuthor(ListView):
 
     def get_queryset(self, **kwargs):
         self.id = self.kwargs.get('pk')
-        print('a', self.id)
+        #print('a', self.id)
         queryset = Post.objects.filter(PostAutor=Autor.objects.get(id=self.id)) # если в Post есть поле post_category
-        print(queryset)
+        #print(queryset)
         return queryset
 
 
 
-class PostDetail(DetailView):
+
+class PostDetail(FormMixin, DetailView, ):
     model = Post
     template_name = 'post.html'
     context_object_name = 'post'
+    form_class=CommentForm
 
-    def get_context_data(self, **kwargs):
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('post_detail', kwargs={'pk':self.get_object().id})
+
+    def post(self, request, *args, **kwargs):
+        print('post')
+        form=self.get_form()
+        if form.is_valid():
+            print('valid')
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)    
+
+    def form_valid(self, form):    
+        self.object=form.save(commit=False) #сохраняем, но не отправляем
+        self.object.commentator = self.request.user
+        self.object.commentPost = self.get_object()
+        self.object.save()
+        return super().form_valid(form)
+
+    def get_context_data( self,  **kwargs, ):
         context = super().get_context_data()
         return context
+   
+
 
 @login_required
 def sub_to_category(request, pk, **kwargs):
@@ -151,8 +163,6 @@ def unsub_to_category(request, pk):
     return redirect("/news")
 
 
-
-
 class PostCreate(CreateView, PermissionRequiredMixin):
 
     model = Post
@@ -179,13 +189,9 @@ class PostCreate(CreateView, PermissionRequiredMixin):
         if len(posts) > 1000000:
             print("howmany",len(posts))
             return redirect('/limit/')
-           
-
-        # else:
-    
+  
         return super(PostCreate, self).post(self, request)
-
-
+   
 
 
 class PostDelete(DeleteView, PermissionRequiredMixin):
@@ -193,6 +199,8 @@ class PostDelete(DeleteView, PermissionRequiredMixin):
     template_name = 'post_delete.html'
     success_url = reverse_lazy('newslist')
     permission_required = ('news.delete_post',)
+
+
 
 
 

@@ -8,8 +8,8 @@ from .tasks import notify_sub_weekly, notyfy_new_post
 from django.template.loader import render_to_string
 
 @receiver(m2m_changed, sender=PostCategory)
-def notify_subscribers(sender, instance, action,  **kwargs):
-     if action == 'post_add':
+def notify_subscribers(sender, instance, action, **kwargs):
+      if action == 'post_add':
         notyfy_new_post(instance)
     # print(' signals...', )
 

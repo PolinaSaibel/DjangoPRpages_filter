@@ -50,16 +50,16 @@ def notify_sub_weekly():
             msg.attach_alternative(html_content, "text/html")  # добавляем html
             msg.send()  # отсылаем 
 
-
+# @shared_task
 def notyfy_new_post(instance):
-    print(' signals...', )
+    #print(' signals...', )
 
     # if action == 'post_add':
-    print('notifying subscribers from signals...', instance.id)
+    #print('notifying subscribers from signals...', instance.id)
     for cat in instance._postcategory.all():
-        print('cat', instance._postcategory.all())
+        #print('cat', instance._postcategory.all())
         S=Subscribers.objects.filter(C=cat)
-        print(S)
+        #print(S)
 
         for subscribe in S:
             msg = EmailMultiAlternatives(

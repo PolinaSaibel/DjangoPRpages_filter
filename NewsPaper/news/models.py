@@ -50,9 +50,10 @@ class Post(models.Model):
     Choise = models.CharField(max_length=2, choices=ARTICLEORNEWS, default=article)
     timeCreation = models.DateTimeField(auto_now_add=True)
     header = models.CharField(max_length=255, verbose_name='Заголовок')
-    _postcategory = models.ManyToManyField(Category, through='PostCategory')
+    _postcategory = models.ManyToManyField(Category, through='PostCategory', verbose_name='cat')
     text = models.TextField()
     rating = models.SmallIntegerField(default=0)
+
 
     def like(self):
         self.rating += 1
@@ -78,11 +79,11 @@ class Subscribers(models.Model):
     C = models.ForeignKey(Category, default=None, on_delete=models.CASCADE, blank=True, null=True)
 
 class PostCategory(models.Model):
-    _Post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    _Category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    Post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    Category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 class Comment(models.Model):
-    commentPost = models.ForeignKey(Post, on_delete=models.CASCADE)
+    commentPost = models.ForeignKey(Post, on_delete=models.CASCADE, blank=True, null=True, related_name="comments")
     commentator = models.ForeignKey(User, on_delete=models.CASCADE)
     com_text = models.TextField()
     timeCreation = models.DateTimeField(auto_now_add = True)

@@ -18,5 +18,7 @@ urlpatterns = [
     path('unsub/<int:pk>', unsub_to_category, name='unsub_to_cat'),
     path('limit/', PostCreate.as_view(), name='limit'),
     path('author/<int:pk>', PostAuthor.as_view(), name='autor'),
+
+
 ]
 
