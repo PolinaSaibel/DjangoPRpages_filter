@@ -32,3 +32,11 @@ class ProfileForms(forms.ModelForm):
             'last_name',
             'email'
             ]
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = [
+            'com_text',
+            ]
+      

@@ -8,8 +8,26 @@ News
 {% block content %}
 <h1>{{ post }}</h1>
 <p align="right">{{ post.timeCreation|date:'d M Y'  }}</p>
-<p>In category: <strong>{{ category_objects.all.name}}</strong></p>
 
 <p>{{ post.text|censor }}</p>
+
 <p align="right"><a href="/author/{{ post.PostAutor.id }}" class='btn'>{{ post.PostAutor }}</a></p>
+
+
+<hr> <p><h3 align="left"> Коментарии: </h3></p>
+
+{% for comment in post.comments.all%}
+    <p><h6 align="left">{{comment.commentator}}</h5></p>
+    <p align="left">{{comment.com_text}}</p>
+    <p align="right">{{comment.timeCreation}}</p>
+    <p>рейтинг:{{comment.rating}}</p>    <hr>
+{%endfor%}
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <input type="submit" value="Save" />
+</form>
+    
+
 {% endblock content %}
