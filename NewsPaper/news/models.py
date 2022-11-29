@@ -50,7 +50,7 @@ class Post(models.Model):
     Choise = models.CharField(max_length=2, choices=ARTICLEORNEWS, default=article)
     timeCreation = models.DateTimeField(auto_now_add=True)
     header = models.CharField(max_length=255, verbose_name='Заголовок')
-    _postcategory = models.ManyToManyField(Category, through='PostCategory', verbose_name='cat')
+    _postcategory = models.ManyToManyField(Category, through='PostCategory', related_name='cat')
     text = models.TextField()
     rating = models.SmallIntegerField(default=0)
 

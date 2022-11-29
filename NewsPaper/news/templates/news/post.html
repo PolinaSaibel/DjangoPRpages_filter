@@ -6,7 +6,9 @@ News
 {% endblock title %}
 
 {% block content %}
+
 <h1>{{ post }}</h1>
+<p>{{post.cat}}</p>
 <p align="right">{{ post.timeCreation|date:'d M Y'  }}</p>
 
 <p>{{ post.text|censor }}</p>
@@ -22,12 +24,13 @@ News
     <p align="right">{{comment.timeCreation}}</p>
     <p>рейтинг:{{comment.rating}}</p>    <hr>
 {%endfor%}
+{% if request.user.is_authenticated %}
 <form action="" method="post">
     {% csrf_token %}
     {{ form.as_p }}
 
     <input type="submit" value="Save" />
 </form>
-    
+{%endif%}   
 
 {% endblock content %}
