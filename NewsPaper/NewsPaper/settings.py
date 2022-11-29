@@ -25,6 +25,148 @@ SECRET_KEY = SECRET_DJANGO_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+#-----------------1)all-console;warning;error 2)info
+# #В консоль  все сообщения уровня DEBUG и выше, включающие время, уровень сообщения, сообщения. 
+# Для сообщений WARNING  должен выводиться путь  (аргумент pathname в форматировании). 
+# для сообщений ERROR и CRITICAL еще должен выводить стэк ошибки (аргумент exc_info).
+# Сюда должны попадать все сообщения с основного логгера django.
+#----------------------
+# # В файл general.log сообщения уровня INFO и выше только с указанием времени, уровня логирования, модуля (аргумент module) и само сообщение.
+# Сюда также попадают сообщения с регистратора django.
+#________
+# # В файл errors.log должны выводиться сообщения только уровня ERROR и CRITICAL. В сообщении указывается время, уровень логирования, само сообщение, путь к источнику сообщения и стэк ошибки. 
+# В этот файл должны попадать сообщения только из логгеров django.request, django.server, django.template, django.db_backends.
+
+# # В файл security.log должны попадать только сообщения, связанные с безопасностью, а значит только из логгера django.security. 
+# Формат вывода предполагает время, уровень логирования, модуль и сообщение.
+
+# На почту должны отправляться сообщения уровней ERROR и выше из django.request и django.server по формату, как в errors.log, но без стэка ошибок.
+
+# Более того, при помощи фильтров нужно указать, что в консоль сообщения отправляются только при DEBUG = True, а на почту и в файл general.log — только при DEBUG = False.
+
+
+
+#logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'all': {
+            'style': '{',
+            'format': '{asctime} {levelname} {message}'
+            
+        },
+        'warning': {
+            'style': '{',
+            'format': '{levelname} {asctime} {message} {pathname}'
+        },
+        'error_crit': {
+            'format': '%(levelname)s %(asctime)s %(message)s %(pathname)s %(exc_info)s'  
+        },
+        'general_log': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(message)s'    
+        },
+        'errors_log': {
+            'format': '%(levelname)s %(asctime)s %(message)s %(pathname)s %(exc_info)s'
+            },
+        'security_log': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
+            },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        # send mail
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    #hand for console DEBUG, for mail
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'all'
+
+        }, 
+        'warning': {
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'warning'
+        },
+        'error_console': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'error_crit'
+        },
+        'general_log': {
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            'class': 'logging.FileHandler',
+            'filename': 'general.log',
+            'formatter': 'general_log'
+        },
+        'errors_log': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename': 'errors.log',
+            'formatter': 'errors_log'
+        },
+        'security_log': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename': 'security.log',
+            'formatter': 'security_log'
+        },
+        'mail': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            # 'email_backend': 'django.core.mail.backends.filebased.EmailBackend',
+            'formatter': 'warning'
+
+        }
+
+
+    },    
+
+    'loggers': {
+        'django':{
+            'handlers':['console','warning','error_console', 'general_log',],           
+            'propagate': True,
+        },
+        'django.request': {
+            'hendlers': ['errors_log', 'mail'],
+            'propagate': True,
+
+        },
+        'django.server': {
+            'hendlers': ['errors_log', 'mail'],
+            'propagate': True,
+        },
+        'django.template': {
+            'hendlers': ['errors_log'],
+            'propagate': True,
+        },
+        'django.db_backends': {
+            'hendlers': ['errors_log'],
+            'propagate': True,
+        },
+        'django.security': {
+            'hendlers': ['security_log'],
+            'propagate': True,
+        }
+    }
+
+}
+
+
 
 ALLOWED_HOSTS = []
 
@@ -161,17 +303,17 @@ ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
 
 load_dotenv()
 env_path=Path('.')/'.env'
-EMAIL_HOST = 'smtp.yandex.ru'  # ����� ������� ������-����� ��� ���� ���� � ��� ��
-EMAIL_PORT = 465  # ���� smtp ������� ���� ����������
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")  # ���� ��� ������������, ��������, ���� ���� ����� user@yandex.ru, �� ���� ���� ������ user, ����� �������, ��� �� �� ��� ��� �� ������
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")  # ������ �� �����
-EMAIL_USE_SSL = True  # ������ ���������� ssl, ��������� � ���, ��� ���, ��������� � �������������� ����������, �� �������� ��� ����� �����������
+EMAIL_HOST = 'smtp.yandex.ru'  
+EMAIL_PORT = 465  
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")  
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD") 
+EMAIL_USE_SSL = True 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
 
-# ������ ����, ������� ����� ������������ ��� �������� (���������� ������ �� ��������)
+
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
-# ���� ������ �� ����������� �� 25 ������, �� ��� ������������� ���������, ������ ��������� ����� ��������, �� ��� �������, ��� ������ ���� �� ������������������ �������
+
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
 
