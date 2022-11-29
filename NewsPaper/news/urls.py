@@ -6,7 +6,7 @@ from .views import *
 urlpatterns = [
     path('index', index),
 
-    path('', NewsList.as_view(), name='newslist'),
+    path('', NewsList.as_view(), name='newslist' ),
     path('week/', WeekView.as_view()),
     path('category/<int:pk>', PostCategory.as_view(), name='post_category'),
     path('<int:pk>', PostDetail.as_view(), name='post_detail'),
