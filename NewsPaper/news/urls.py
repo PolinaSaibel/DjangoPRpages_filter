@@ -1,12 +1,12 @@
 from django.contrib import admin
 from django.urls import path
-
+from django.views.decorators.cache import cache_page
 from .views import *
 
 urlpatterns = [
     path('index', index),
 
-    path('', NewsList.as_view(), name='newslist'),
+    path('', cache_page(60*2)(NewsList.as_view()), name='newslist'),#кэш главной стр
     path('week/', WeekView.as_view()),
     path('category/<int:pk>', PostCategory.as_view(), name='post_category'),
     path('<int:pk>', PostDetail.as_view(), name='post_detail'),
