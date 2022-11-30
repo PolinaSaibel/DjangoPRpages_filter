@@ -11,9 +11,13 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
 from pathlib import Path
-from .passwords import SECRET_DJANGO_KEY
+# from .passwords import SECRET_DJANGO_KEY
 from dotenv import load_dotenv
 
+
+
+load_dotenv()
+env_path=Path('.')/'.env'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,10 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = SECRET_DJANGO_KEY
+SECRET_KEY = os.getenv("SECRET_DJANGO_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 #-----------------1)all-console;warning;error 2)info
 # #В консоль  все сообщения уровня DEBUG и выше, включающие время, уровень сообщения, сообщения. 
 # Для сообщений WARNING  должен выводиться путь  (аргумент pathname в форматировании). 
@@ -128,38 +132,39 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
-            # 'email_backend': 'django.core.mail.backends.filebased.EmailBackend',
             'formatter': 'warning'
+        },
 
-        }
 
 
     },    
 
     'loggers': {
         'django':{
-            'handlers':['console','warning','error_console', 'general_log',],           
+            'level': 'DEBUG',
+            'handlers': ['console','warning','error_console', 'general_log',],           
             'propagate': True,
         },
         'django.request': {
-            'hendlers': ['errors_log', 'mail'],
+            
+            'handlers': ['errors_log', 'mail',],
             'propagate': True,
 
         },
         'django.server': {
-            'hendlers': ['errors_log', 'mail'],
+            'handlers': ['errors_log', 'mail',],
             'propagate': True,
         },
         'django.template': {
-            'hendlers': ['errors_log'],
+            'handlers': ['errors_log',],
             'propagate': True,
         },
-        'django.db_backends': {
-            'hendlers': ['errors_log'],
+        'django.db.backends': {
+            'handlers': ['errors_log'],
             'propagate': True,
         },
         'django.security': {
-            'hendlers': ['security_log'],
+            'handlers': ['security_log'],
             'propagate': True,
         }
     }
@@ -168,7 +173,7 @@ LOGGING = {
 
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [8000]
 
 # Application definition
 
@@ -284,6 +289,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -301,8 +307,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
 
 
-load_dotenv()
-env_path=Path('.')/'.env'
+
 EMAIL_HOST = 'smtp.yandex.ru'  
 EMAIL_PORT = 465  
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")  
@@ -311,12 +316,16 @@ EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
 
 
+# ADMINS = [('admin', DEFAULT_FROM_EMAIL),]
+
+
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
 
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
-
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 
@@ -330,10 +339,10 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(BASE_DIR, 'cache_files'), # Указываем, куда будем сохранять кэшируемые файлы! Не забываем создать папку cache_files внутри папки с manage.py!
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#         'LOCATION': os.path.join(BASE_DIR, 'cache_files'), # Указываем, куда будем сохранять кэшируемые файлы! Не забываем создать папку cache_files внутри папки с manage.py!
+#     }
+# }
 
