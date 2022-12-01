@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_DJANGO_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 #-----------------1)all-console;warning;error 2)info
 # #В консоль  все сообщения уровня DEBUG и выше, включающие время, уровень сообщения, сообщения. 
 # Для сообщений WARNING  должен выводиться путь  (аргумент pathname в форматировании). 
@@ -116,7 +116,7 @@ LOGGING = {
         },
         'errors_log': {
             'level': 'ERROR',
-            'filters': ['require_debug_false'],
+            'filters': ['require_debug_true'],
             'class': 'logging.FileHandler',
             'filename': 'errors.log',
             'formatter': 'errors_log'
@@ -176,8 +176,8 @@ LOGGING = {
 }
 
 
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
 
