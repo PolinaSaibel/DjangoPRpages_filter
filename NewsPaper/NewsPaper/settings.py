@@ -116,7 +116,7 @@ LOGGING = {
         },
         'errors_log': {
             'level': 'ERROR',
-            'filters': ['require_debug_true'],
+            'filters': ['require_debug_false'],
             'class': 'logging.FileHandler',
             'filename': 'errors.log',
             'formatter': 'errors_log'
@@ -142,28 +142,32 @@ LOGGING = {
     'loggers': {
         'django':{
             'level': 'DEBUG',
-            'handlers': ['console','warning','error_console', 'general_log',],           
+            'handlers': ['console','warning','error_console', 'general_log', ],           
             'propagate': True,
         },
         'django.request': {
-            
+            'level': 'ERROR',
             'handlers': ['errors_log', 'mail',],
             'propagate': True,
 
         },
         'django.server': {
+            'level': 'ERROR',
             'handlers': ['errors_log', 'mail',],
             'propagate': True,
         },
         'django.template': {
+            'level': 'ERROR',
             'handlers': ['errors_log',],
             'propagate': True,
         },
         'django.db.backends': {
+            'level': 'ERROR',
             'handlers': ['errors_log'],
             'propagate': True,
         },
         'django.security': {
+            'level': 'DEBUG',
             'handlers': ['security_log'],
             'propagate': True,
         }
@@ -173,7 +177,7 @@ LOGGING = {
 
 
 
-ALLOWED_HOSTS = [8000]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -316,7 +320,7 @@ EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
 
 
-# ADMINS = [('admin', DEFAULT_FROM_EMAIL),]
+ADMINS = [('admin', DEFAULT_FROM_EMAIL),]
 
 
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
