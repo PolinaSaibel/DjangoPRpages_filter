@@ -29,25 +29,6 @@ SECRET_KEY = os.getenv("SECRET_DJANGO_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-#-----------------1)all-console;warning;error 2)info
-# #В консоль  все сообщения уровня DEBUG и выше, включающие время, уровень сообщения, сообщения. 
-# Для сообщений WARNING  должен выводиться путь  (аргумент pathname в форматировании). 
-# для сообщений ERROR и CRITICAL еще должен выводить стэк ошибки (аргумент exc_info).
-# Сюда должны попадать все сообщения с основного логгера django.
-#----------------------
-# # В файл general.log сообщения уровня INFO и выше только с указанием времени, уровня логирования, модуля (аргумент module) и само сообщение.
-# Сюда также попадают сообщения с регистратора django.
-#________
-# # В файл errors.log должны выводиться сообщения только уровня ERROR и CRITICAL. В сообщении указывается время, уровень логирования, само сообщение, путь к источнику сообщения и стэк ошибки. 
-# В этот файл должны попадать сообщения только из логгеров django.request, django.server, django.template, django.db_backends.
-
-# # В файл security.log должны попадать только сообщения, связанные с безопасностью, а значит только из логгера django.security. 
-# Формат вывода предполагает время, уровень логирования, модуль и сообщение.
-
-# На почту должны отправляться сообщения уровней ERROR и выше из django.request и django.server по формату, как в errors.log, но без стэка ошибок.
-
-# Более того, при помощи фильтров нужно указать, что в консоль сообщения отправляются только при DEBUG = True, а на почту и в файл general.log — только при DEBUG = False.
-
 
 
 #logging
@@ -89,7 +70,7 @@ LOGGING = {
     #hand for console DEBUG, for mail
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'all'
@@ -122,7 +103,7 @@ LOGGING = {
             'formatter': 'errors_log'
         },
         'security_log': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'filters': ['require_debug_true'],
             'class': 'logging.FileHandler',
             'filename': 'security.log',
@@ -212,11 +193,13 @@ SITE_ID = 1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'NewsPaper.urls'
@@ -280,7 +263,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+#!!!!!!!!!!!!!!!!!!создать папку локал
+LOCALE_PATHS = [os.path.join(BASE_DIR, 'locale')]
+LANGUAGE_CODE ='en'
+
+LANGUAGES = [
+    ('ru', 'Русский'),
+    ('en', 'English')
+]
 
 TIME_ZONE = 'UTC'
 

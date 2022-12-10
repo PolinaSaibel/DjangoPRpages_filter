@@ -1,6 +1,7 @@
 
 {% extends 'default.html' %}
 {% load custom_filters %}
+{% load i18n %}
 {% block title %}
 News
 {% endblock title %}
@@ -16,7 +17,7 @@ News
 <p align="right"><a href="/author/{{ post.PostAutor.id }}" class='btn'>{{ post.PostAutor }}</a></p>
 
 
-<hr> <p><h3 align="left"> Коментарии: </h3></p>
+<hr> <p><h3 align="left"> {% trans 'Коментарии'%}: </h3></p>
 
 {% for comment in post.comments.all%}
     <p><h6 align="left">{{comment.commentator}}</h5></p>

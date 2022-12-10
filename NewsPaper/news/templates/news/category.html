@@ -1,5 +1,6 @@
 {% extends 'default.html' %}
 {% load custom_tags %}
+{% load i18n %}
 {% block title %}
 News
 {% endblock title %}
@@ -7,7 +8,9 @@ News
 <!-- В контенте на странице мы выводим все товары -->
 {% block content %}
 
-<h1>Все новости категории {{ category.name }} </h1>
+<h1>{% blocktranslate with category=category.name %}
+    Все новости категории {{ category }}.
+    {% endblocktranslate %}   </h1>
  <a href="{% url 'sub_to_category' category.id %}"  class="btn btn-success">
       Подписаться
   </a>
@@ -25,11 +28,11 @@ News
    {% if posts %}
        <table align="center">
            <tr>
-               <td><h4>Заголовок</h4></td>
-               <td><h4>Дата публикации</h4></td>
-               <td><h4>Текст</h4></td>
-               <td><h4>Рейтинг</h4></td>
-               <td><h4>Статья либо новость</h4></td>
+            <td><h4>{% trans 'Заголовок'%}</h4></td>
+            <td><h4>{% trans 'Дата публикации'%}</h4></td>
+            <td><h4>{% trans 'Текст'%}</h4></td>
+            <td><h4>{% trans 'Рейтинг'%}</h4></td>
+            <td><h4>{% trans 'Статья либо новость'%}</h4></td>
            </tr>
            {% for post in posts %}
            <tr>
@@ -44,7 +47,7 @@ News
 
        </table>
    {% else %}
-       <h2>Новостей нет!</h2>
+       <h2>{% trans 'Новостей нет'%}!</h2>
    {% endif %}
 
    {% if page_obj.has_previous %}

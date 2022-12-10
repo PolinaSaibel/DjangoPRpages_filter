@@ -1,5 +1,6 @@
 {% extends 'default.html' %}
 {% load custom_tags %}
+{% load i18n %}
 {% block title %}
 News
 {% endblock title %}
@@ -7,9 +8,15 @@ News
 <!-- В контенте на странице мы выводим все товары -->
 {% block content %}
 
-<h1>Все новости автора {{ author }} </h1>
+<h1>{% blocktranslate with author=author %}
+    Все новости автора {{ author }}
+    {%endblocktranslate%} 
+</h1>
 
-<h3>Всего новостей: {{ posts|length }}</h3>
+<h3>
+    {% blocktranslate with news_len=news|length %}
+    Всего новостей: {{ news_len }}
+    {% endblocktranslate %}</h3>
 
 <!-- {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}-->
 
@@ -17,12 +24,11 @@ News
    {% if posts %}
        <table align="center">
            <tr>
-               <td><h4>Заголовок</h4></td>
-               <td><h4>Дата публикации</h4></td>
-               <td><h4>Текст</h4></td>
-               <td><h4>Рейтинг</h4></td>
-               <td><h4>Статья либо новость</h4></td>
-               <td></td>
+               <td><h4>{% trans 'Заголовок'%}</h4></td>
+               <td><h4>{% trans 'Дата публикации'%}</h4></td>
+               <td><h4>{% trans 'Текст'%}</h4></td>
+               <td><h4>{% trans 'Рейтинг'%}</h4></td>
+               <td><h4>{% trans 'Статья либо новость'%}</h4></td>
            </tr>
            {% for post in posts %}
            <tr>
@@ -40,7 +46,7 @@ News
 
        </table>
    {% else %}
-       <h2>Новостей нет!</h2>
+       <h2>{% trans 'Новостей нет'%}!</h2>
    {% endif %}
 
    {% if page_obj.has_previous %}
